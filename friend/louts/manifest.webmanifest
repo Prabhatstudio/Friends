@@ -1,0 +1,20 @@
+{
+  "name": "Best Friend Forever \ud83d\udc99",
+  "short_name": "BFF \ud83d\udc99",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#e3f2fd",
+  "theme_color": "#4fc3f7",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
