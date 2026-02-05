@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Best Friend Forever 💙</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- QR library -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#4fc3f7" />
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+    html{scroll-behavior:smooth}
+    body{min-height:100vh;background:linear-gradient(135deg,#e3f2fd,#f3e5f5);overflow-x:hidden}
+
+    /* Floating stars */
+    .star{position:fixed;color:#4fc3f7;font-size:20px;animation:float 8s linear infinite;opacity:0;z-index:0;pointer-events:none}
+    @keyframes float{
+      0%{transform:translateY(100vh) rotate(0deg);opacity:0}
+      10%{opacity:.8}
+      90%{opacity:.8}
+      100%{transform:translateY(-100px) rotate(360deg);opacity:0}
+    }
+
+    /* High five */
+    .highfive{position:fixed;font-size:30px;animation:highfiveFloat 3s ease-out forwards;z-index:9999;pointer-events:none}
+    @keyframes highfiveFloat{
+      0%{transform:translateY(0) scale(.5);opacity:1}
+      50%{transform:translateY(-100px) scale(1.2);opacity:1}
+      100%{transform:translateY(-200px) scale(.8);opacity:0}
+    }
+
+    /* Navigation */
+    .navbar{position:fixed;top:0;left:0;width:100%;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);padding:15px 0;box-shadow:0 5px 20px rgba(0,0,0,.1);z-index:1000}
+    .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:0 20px;gap:16px}
+    .logo{font-family:'Pacifico',cursive;font-size:22px;color:#4fc3f7;white-space:nowrap}
+    .nav-links{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+    .nav-link{text-decoration:none;color:#555;font-weight:500;font-size:14px;transition:all .3s;padding:8px 14px;border-radius:20px}
+    .nav-link:hover,.nav-link.active{background:#4fc3f7;color:#fff}
+
+    /* Music player */
+    .music-player{position:fixed;bottom:20px;right:20px;background:#fff;border-radius:15px;padding:15px;box-shadow:0 10px 30px rgba(0,0,0,.2);z-index:1200;width:320px;display:none}
+    .player-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .player-header h3{color:#4fc3f7;font-size:16px}
+    .close-player{background:none;border:none;color:#4fc3f7;font-size:20px;cursor:pointer}
+    .player-controls{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    .play-btn,.pause-btn{width:40px;height:40px;border-radius:50%;background:#4fc3f7;border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .song-info{flex-grow:1;min-width:0}
+    .song-title{font-weight:600;color:#333;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .song-artist{font-size:12px;color:#777}
+    .progress-bar{height:8px;background:#e1f5fe;border-radius:999px;overflow:hidden;margin-top:10px;cursor:pointer}
+    .progress{height:100%;background:linear-gradient(90deg,#4fc3f7,#29b6f6);width:0%}
+    .time-row{display:flex;justify-content:space-between;font-size:12px;color:#6b6b6b;margin-top:6px}
+
+    /* Pages */
+    .page{min-height:100vh;display:none;justify-content:center;align-items:center;padding:110px 20px 80px;position:relative}
+    .page.active{display:flex}
+    .page-container{max-width:1000px;width:100%;z-index:1}
+
+    /* Cards */
+    .welcome-card,.playlist-container,.final-card{background:#f0faff;border-radius:25px;padding:40px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.1)}
+    .final-card{padding:50px 40px;box-shadow:0 25px 60px rgba(0,0,0,.15)}
+    .header{font-size:14px;color:#4fc3f7;margin-bottom:10px}
+    h1{font-size:40px;margin:12px 0;color:#4fc3f7}
+    .highlight{color:#4fc3f7;font-weight:600}
+
+    .btn{margin-top:22px;padding:14px 30px;background:#4fc3f7;color:#fff;border:none;border-radius:30px;font-size:16px;cursor:pointer;box-shadow:0 8px 20px rgba(79,195,247,.4);transition:all .25s;font-weight:600}
+    .btn:hover{transform:translateY(-3px);background:#29b6f6;box-shadow:0 12px 25px rgba(79,195,247,.5)}
+    .btn.secondary{background:#9cf0c8;color:#333;box-shadow:0 8px 20px rgba(156,240,200,.45)}
+    .footer{margin-top:18px;font-size:13px;color:#4fc3f7}
+
+    /* Envelope */
+    .envelope-container{display:flex;justify-content:center;margin:24px 0}
+    .envelope{width:280px;height:180px;position:relative;cursor:pointer;transition:transform .35s}
+    .envelope:hover{transform:scale(1.05)}
+    .env-body{width:100%;height:100%;background:#e3f2fd;border-radius:12px;position:absolute;z-index:1}
+    .env-flap{position:absolute;top:0;left:0;width:100%;height:100%;background:#bbdefb;clip-path:polygon(0 0,100% 0,50% 55%);transform-origin:top;transition:.6s;z-index:2}
+    .envelope.open .env-flap{transform:rotateX(180deg)}
+    .star-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#4fc3f7;color:#fff;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;z-index:3}
+
+    /* Letter */
+    .letter-paper{background:#fff;border-radius:20px;padding:40px;position:relative;box-shadow:0 15px 35px rgba(0,0,0,.1);border:2px dashed #bbdefb;text-align:left}
+    .letter-label{display:flex;align-items:center;gap:10px;font-weight:600;color:#4fc3f7;margin-bottom:18px}
+    .label-icon{width:30px;height:30px;border-radius:50%;background:#4fc3f7;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+    .friend-sticker{position:absolute;top:-18px;right:-18px;font-size:64px;transform:rotate(15deg)}
+    .handwritten{font-family:'Pacifico',cursive;font-size:18px;line-height:1.8;color:#444;margin-bottom:20px}
+    .friendship-stamp{width:90px;height:90px;border-radius:50%;border:3px dashed #90caf9;display:flex;align-items:center;justify-content:center;color:#4fc3f7;font-size:28px;margin:18px auto}
+    .signature{text-align:right;margin-top:14px;color:#4fc3f7;font-family:'Pacifico',cursive;font-size:20px}
+
+    /* Playlist */
+    .playlist-title{color:#4fc3f7;font-weight:700;text-align:center;margin-bottom:6px}
+    .playlist-subtitle{font-size:14px;color:#777;text-align:center;margin-bottom:22px}
+    .playlist{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+    .playlist-card{width:220px;background:#fff;border-radius:18px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.1);transition:all .25s;cursor:pointer;text-align:left}
+    .playlist-card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,.15)}
+    .playlist-card.active{border:2px solid #4fc3f7;background:#f5fbff}
+    .card-img{width:100%;height:150px;border-radius:12px;object-fit:cover;margin-bottom:12px}
+    .song-desc{font-size:13px;color:#666;margin-top:6px;line-height:1.35}
+
+    /* Flip cards */
+    .cards-container{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:26px 0}
+    .flip-card{width:240px;height:180px;perspective:1000px;cursor:pointer}
+    .flip-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .8s}
+    .flip-card.flipped .flip-inner{transform:rotateY(180deg)}
+    .card-front,.card-back{position:absolute;width:100%;height:100%;border-radius:18px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;padding:14px;box-shadow:0 12px 30px rgba(0,0,0,.1)}
+    .card-front{background:#fff}
+    .card-back{background:#f5fbff;transform:rotateY(180deg);font-size:15px;color:#555;line-height:1.5;text-align:center}
+
+    /* Progress */
+    .progress-container{margin-top:22px;text-align:center}
+    .progress-text{color:#4fc3f7;font-size:15px;margin-bottom:10px}
+    .progress-bar-big{width:300px;height:8px;background:#e1f5fe;border-radius:999px;margin:0 auto;overflow:hidden}
+    .progress-fill{width:0%;height:100%;background:linear-gradient(90deg,#4fc3f7,#29b6f6);border-radius:999px;transition:width .4s ease}
+
+    /* Final */
+    .seal{width:100px;height:100px;background:radial-gradient(circle at top,#e3f2fd,#90caf9);border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:40px;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+    .stars-row{font-size:24px;color:#4fc3f7;letter-spacing:8px;margin:18px 0}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:2000;padding:20px}
+    .modal-content{background:#fff;border-radius:20px;padding:26px;text-align:center;max-width:460px;width:100%;animation:pop .4s ease}
+    @keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+    .confetti{font-size:36px;margin-bottom:10px}
+    .mini{font-size:13px;color:#4fc3f7;margin-top:10px}
+
+    /* Sound gate (mobile) */
+    .sound-gate{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.78);backdrop-filter:blur(10px);z-index:2500;padding:20px}
+    .sound-card{background:#fff;border-radius:22px;max-width:520px;width:100%;padding:22px 20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+    .sound-card h2{color:#4fc3f7;margin-bottom:10px}
+    .sound-card p{color:#555;line-height:1.5}
+
+    /* QR box */
+    .qrbox{display:flex;align-items:center;justify-content:center;margin-top:14px}
+    #qrcode{background:#fff;padding:10px;border-radius:14px;box-shadow:0 10px 25px rgba(0,0,0,.12)}
+    .qr-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+
+    @media (max-width:768px){
+      .nav-container{flex-direction:column;align-items:flex-start}
+      .nav-links{justify-content:flex-start}
+      h1{font-size:32px}
+      .music-player{width:280px;right:10px;bottom:10px}
+      .playlist,.cards-container{flex-direction:column;align-items:center}
+      .flip-card,.playlist-card{width:100%;max-width:320px}
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">Best Friend Forever 💙</div>
+      <div class="nav-links">
+        <a href="#home" class="nav-link active" data-page="home">Home</a>
+        <a href="#letter" class="nav-link" data-page="letter">Letter</a>
+        <a href="#playlist" class="nav-link" data-page="playlist">Playlist</a>
+        <a href="#messages" class="nav-link" data-page="messages">Messages</a>
+        <a href="#final" class="nav-link" data-page="final">Forever</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Music Player -->
+  <div class="music-player" id="musicPlayer">
+    <div class="player-header">
+      <h3>Now Playing ✨</h3>
+      <button class="close-player" onclick="closePlayer()" aria-label="Close player">✕</button>
+    </div>
+
+    <div class="player-controls">
+      <button class="play-btn" id="playBtn" onclick="playSong()" aria-label="Play">▶</button>
+      <button class="pause-btn" id="pauseBtn" onclick="pauseSong()" style="display:none" aria-label="Pause">⏸</button>
+
+      <div class="song-info">
+        <div class="song-title" id="nowPlayingTitle">Select a song</div>
+        <div class="song-artist" id="nowPlayingArtist">For Lotus</div>
+      </div>
+    </div>
+
+    <div class="progress-bar" id="seekBar" title="Tap to seek">
+      <div class="progress" id="songProgress"></div>
+    </div>
+    <div class="time-row">
+      <span id="tNow">0:00</span>
+      <span id="tDur">0:00</span>
+    </div>
+
+    <!-- IMPORTANT: this was missing in your file -->
+    <audio id="audioPlayer" preload="metadata" playsinline></audio>
+  </div>
+
+  <!-- Home -->
+  <section id="home" class="page active">
+    <div class="page-container">
+      <div class="welcome-card">
+        <div class="header">A Small Surprise For My Best Friend ✨</div>
+        <h1>Hey Lotus! 👋💙</h1>
+
+        <p>
+          Maine socha kuch different banaya jaaye…<br>
+          ek aisa page jo humari friendship ko thoda sa celebrate kare 🌸
+        </p>
+
+        <p style="margin-top:10px">
+          Tumhare saath baat karke genuinely accha feel hota hai —<br>
+          simple moments bhi special ban jaate hain ✨
+        </p>
+
+        <p style="margin-top:10px"><span class="highlight">Just tap the surprise and enjoy 💙</span></p>
+
+        <button class="btn" onclick="openModal()">Open Friendship Surprise 🎁</button>
+
+        <div class="footer">Made with pure friendship vibes ✌️</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Friendship Letter -->
+  <section id="letter" class="page">
+    <div class="page-container">
+      <div class="playlist-container">
+        <h2 class="playlist-title">A Friendship Note 📝</h2>
+        <p class="playlist-subtitle">From my heart to my awesome friend</p>
+
+        <div class="envelope-container">
+          <div class="envelope" onclick="openEnvelope()" aria-label="Open letter">
+            <div class="env-body"></div>
+            <div class="env-flap"></div>
+            <div class="star-btn">✨</div>
+          </div>
+        </div>
+
+        <p style="text-align:center;color:#4fc3f7;margin:12px 0;">Tap the envelope to open the note</p>
+
+        <div class="letter-paper" id="letterContent" style="display:none;">
+          <div class="letter-label">
+            <div class="label-icon">🤝</div>
+            My Amazing Friend Lotus
+          </div>
+
+          <div class="friend-sticker">👩‍🎓</div>
+
+          <div class="handwritten">
+            Hey Lotus!<br><br>
+            Bas ek chhoti si baat bolni thi…
+            Tum ek aisi friend ho jiske saath vibe naturally match ho jaati hai.
+            Random chats ho ya serious talks — tumhare saath sab easy lagta hai.<br><br>
+            I really appreciate your kind nature, your understanding,
+            aur woh calm energy jo tum apne saath laati ho.
+            Honestly, I’m lucky to have you as a friend 💙<br><br>
+            Stay happy, stay the same — and always remember:
+            I’m here, as your friend.
+          </div>
+
+          <div class="friendship-stamp">🤝</div>
+
+          <div class="signature">
+            Your friend always,<br>
+            Lotus's Buddy 💙
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:20px">
+          <button class="btn" onclick="nextPage('playlist')">Continue To Playlist 🎵</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Playlist -->
+  <section id="playlist" class="page">
+    <div class="page-container">
+      <div class="playlist-container">
+        <h2 class="playlist-title">Friendship Playlist For You 🎶</h2>
+        <p class="playlist-subtitle">
+          Tip: Mobile browsers require a tap to start audio (so first play = perfect).
+        </p>
+
+        <p style="text-align:center;color:#4fc3f7;margin-bottom:18px;">Choose a track to start vibing ✨</p>
+
+        <div class="playlist">
+          <div class="playlist-card" onclick="selectSong(0)">
+            <img src="assets/icons/music.avif" class="card-img" alt="Friendship Song">
+            <div class="song-title">Kithe Reh Gaya</div>
+            <div class="song-desc">Soft friendship vibes 🤝</div>
+          </div>
+
+          <div class="playlist-card" onclick="selectSong(1)">
+            <img src="assets/icons/music2.avif" class="card-img" alt="Good Times">
+            <div class="song-title">Tum se hi</div>
+            <div class="song-desc">Good times & memories 🌟</div>
+          </div>
+
+          <div class="playlist-card" onclick="selectSong(2)">
+            <img src="assets/icons/music3.avif" class="card-img" alt="Memory">
+            <div class="song-title">Tum se hi</div>
+            <div class="song-desc">Calm, cute, and clean ✨</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:24px">
+          <button class="btn" onclick="nextPage('messages')">Discover Hidden Messages 🔍</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Messages -->
+  <section id="messages" class="page">
+    <div class="page-container">
+      <div class="playlist-container">
+        <h2 class="playlist-title">Hidden Friendship Messages 💙</h2>
+        <p class="playlist-subtitle">Tap each card to reveal a special thought!</p>
+
+        <div class="cards-container">
+          <div class="flip-card" onclick="flipCard(this)">
+            <div class="flip-inner">
+              <div class="card-front">
+                <img src="assets/icons/music2.avif" style="width:100%;border-radius:12px" alt="Memory">
+              </div>
+              <div class="card-back">You make ordinary days feel extraordinary. Thanks for being you! ✨</div>
+            </div>
+          </div>
+
+          <div class="flip-card" onclick="flipCard(this)">
+            <div class="flip-inner">
+              <div class="card-front">
+                <img src="assets/icons/music3.avif" style="width:100%;border-radius:12px" alt="Magic">
+              </div>
+              <div class="card-back">I admire your calm energy. You're stronger than you realize! 💪</div>
+            </div>
+          </div>
+
+          <div class="flip-card" onclick="flipCard(this)">
+            <div class="flip-inner">
+              <div class="card-front">
+                <img src="assets/icons/music.avif" style="width:100%;border-radius:12px" alt="Choice">
+              </div>
+              <div class="card-back">If I had to pick a friend for life adventures, I'd choose you! 🗺️</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-text" id="progressText">0 of 3 messages discovered! Keep exploring 💙</div>
+          <div class="progress-bar-big"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+
+        <div style="text-align:center;margin-top:22px">
+          <button class="btn" onclick="unlockFinal()" id="finalBtn" disabled>Unlock Final Message 🔓</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final -->
+  <section id="final" class="page">
+    <div class="page-container">
+      <div class="final-card">
+        <div class="seal">🤝</div>
+
+        <h1>Friendship Sealed Forever</h1>
+        <p class="playlist-subtitle">Grateful For You Always</p>
+
+        <div class="stars-row">✨ ✨ ✨ ✨ ✨ ✨ ✨</div>
+
+        <div class="handwritten" style="text-align:center;margin:18px 0;">
+          Hey Lotus,<br><br>
+          Tum meri life ka ek important part ho — as a friend.
+          Tumhare saath jo bond hai, woh simple hai but real hai.<br><br>
+          Aage life me kitna bhi busy ho jaayein,
+          I hope humari friendship aise hi strong rahe.
+          More laughs, more memories, aur more good vibes 💙<br><br>
+          Thanks for being you.
+        </div>
+
+        <div class="signature" style="text-align:center;">
+          Your friend forever,<br>
+          Lotus's Buddy 💙<br>
+          <span style="font-size:14px;color:#4fc3f7;">Thursday, February 05, 2026</span>
+        </div>
+
+        <div class="qr-actions">
+          <button class="btn" onclick="openQRModal()">Share by QR 📱</button>
+          <button class="btn secondary" onclick="sendHighFives()">Send High Fives ✋</button>
+          <button class="btn" onclick="restartExperience()">Experience Again ✨</button>
+        </div>
+
+        <div class="mini">Tip: After hosting, QR will work for your friend on mobile.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modals -->
+  <div class="modal" id="heartModal">
+    <div class="modal-content">
+      <div class="confetti">🎉</div>
+      <h2 style="color:#4fc3f7;margin-bottom:10px;">✨ Friendship Appreciation ✨</h2>
+      <p style="margin-bottom:18px;">
+        Tum meri sabse best dost ho Lotus!<br>
+        Tumhare saath har moment special hai 💙
+      </p>
+      <button class="btn" onclick="goToLetter()">Next ✨</button>
+      <div class="mini">Audio note: Tap playlist to start music.</div>
+    </div>
+  </div>
+
+  <div class="modal" id="unlockModal">
+    <div class="modal-content">
+      <div class="confetti">✨</div>
+      <h2 style="color:#4fc3f7;margin-bottom:10px;">All Messages Unlocked!</h2>
+      <p style="margin-bottom:18px;">Every message is a piece of my appreciation for our friendship. ✨</p>
+      <button class="btn" onclick="goToFinal()">Open the Final Note 📝</button>
+      <p class="mini" style="cursor:pointer" onclick="closeUnlockModal()">Stay here a bit longer</p>
+    </div>
+  </div>
+
+  <div class="modal" id="qrModal">
+    <div class="modal-content">
+      <div class="confetti">📱</div>
+      <h2 style="color:#4fc3f7;margin-bottom:10px;">Share This Page</h2>
+      <p style="margin-bottom:12px;color:#555;line-height:1.5">
+        QR works after you host this folder (GitHub Pages / Netlify).
+        Then your friend scans and opens the same experience on mobile.
+      </p>
+
+      <div class="qrbox">
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="qr-actions">
+        <button class="btn" onclick="copyLink()">Copy Link</button>
+        <button class="btn secondary" onclick="closeQRModal()">Done</button>
+      </div>
+
+      <div class="mini" id="qrHint"></div>
+    </div>
+  </div>
+
+  <!-- Sound gate -->
+  <div class="sound-gate" id="soundGate">
+    <div class="sound-card">
+      <h2>Enable Sound 🎧</h2>
+      <p>
+        Mobile browsers block autoplay. Tap below once, and music will work smoothly.
+      </p>
+      <button class="btn" onclick="unlockSound()">Tap to Enable</button>
+      <div class="mini">You can still continue without sound.</div>
+    </div>
+  </div>
+
+  <script>
+    // ====== STATE ======
+    let flippedCards = 0;
+    const totalCards = 3;
+    let currentSong = null;
+
+    // ====== SONGS ======
+    const songs = [
+      { title: "Kithe Rah Gaya", artist: "Friendship vibes", src: "assets/music/KITHE_REH_GAYA___Aesthetic_vibes___Girls_Everywhere___@aprajita_bisht(128k) (2).mp3" },
+      { title: "Tum Se Hi", artist: "Good times",       src: "assets/music/Pritam – Tum Se Hi (mp3cut.net) copy.mp3" },
+      { title: "Tum Se Hi", artist: "Memories",         src: "assets/music/Pritam – Tum Se Hi (mp3cut.net) copy.mp3" }
+    ];
+
+    // ====== AUDIO ======
+    const audio = document.getElementById("audioPlayer");
+    const playBtn = document.getElementById("playBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const nowTitle = document.getElementById("nowPlayingTitle");
+    const nowArtist = document.getElementById("nowPlayingArtist");
+    const songProgress = document.getElementById("songProgress");
+    const seekBar = document.getElementById("seekBar");
+    const tNow = document.getElementById("tNow");
+    const tDur = document.getElementById("tDur");
+
+    function fmtTime(sec){
+      if(!isFinite(sec)) return "0:00";
+      sec = Math.max(0, Math.floor(sec));
+      const m = Math.floor(sec/60);
+      const s = sec%60;
+      return m + ":" + String(s).padStart(2,"0");
+    }
+
+    // Update progress + time
+    audio.addEventListener("timeupdate", () => {
+      if (!audio.duration) return;
+      const percent = (audio.currentTime / audio.duration) * 100;
+      songProgress.style.width = percent + "%";
+      tNow.textContent = fmtTime(audio.currentTime);
+      tDur.textContent = fmtTime(audio.duration);
+    });
+
+    audio.addEventListener("loadedmetadata", () => {
+      tDur.textContent = fmtTime(audio.duration);
+    });
+
+    audio.addEventListener("ended", () => nextSong());
+
+    // Tap to seek
+    seekBar.addEventListener("click", (e) => {
+      if (!audio.duration) return;
+      const rect = seekBar.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = Math.max(0, Math.min(1, ratio)) * audio.duration;
+    });
+
+    async function playSong() {
+      if (currentSong === null) return;
+      try {
+        await audio.play(); // will throw if not user-gesture on some mobiles
+        playBtn.style.display = "none";
+        pauseBtn.style.display = "flex";
+      } catch (e) {
+        // show sound gate for mobile
+        document.getElementById("soundGate").style.display = "flex";
+        playBtn.style.display = "flex";
+        pauseBtn.style.display = "none";
+      }
+    }
+
+    function pauseSong() {
+      audio.pause();
+      playBtn.style.display = "flex";
+      pauseBtn.style.display = "none";
+    }
+
+    function closePlayer() {
+      pauseSong();
+      audio.currentTime = 0;
+      songProgress.style.width = "0%";
+      document.getElementById("musicPlayer").style.display = "none";
+      tNow.textContent = "0:00";
+      tDur.textContent = "0:00";
+    }
+
+    function selectSong(index) {
+      currentSong = index;
+
+      nowTitle.textContent = songs[index].title;
+      nowArtist.textContent = songs[index].artist;
+
+      document.getElementById("musicPlayer").style.display = "block";
+
+      document.querySelectorAll(".playlist-card").forEach((card, i) => {
+        card.classList.toggle("active", i === index);
+      });
+
+      audio.src = songs[index].src;
+      audio.load();
+      audio.currentTime = 0;
+      songProgress.style.width = "0%";
+
+      playSong();
+    }
+
+    function nextSong() {
+      if (currentSong === null) return;
+      currentSong = (currentSong + 1) % songs.length;
+      selectSong(currentSong);
+    }
+
+    // ====== UI FLOW ======
+    document.addEventListener("DOMContentLoaded", () => {
+      createStars();
+
+      document.querySelectorAll(".nav-link").forEach(link => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const pageId = link.getAttribute("data-page");
+          nextPage(pageId);
+        });
+      });
+
+      showPage("home");
+      // Register service worker (offline caching for music + assets after first load)
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(()=>{});
+      }
+    });
+
+    function createStars() {
+      setInterval(() => {
+        const star = document.createElement("div");
+        star.className = "star";
+        star.innerHTML = "✨";
+        star.style.left = Math.random() * 100 + "vw";
+        star.style.fontSize = (15 + Math.random() * 25) + "px";
+        star.style.animationDuration = (5 + Math.random() * 6) + "s";
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 9000);
+      }, 300);
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      const target = document.getElementById(pageId);
+      target.classList.add("active");
+      setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    }
+
+    function setActiveNav(pageId){
+      document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
+      const btn = document.querySelector(`[data-page="${pageId}"]`);
+      if(btn) btn.classList.add("active");
+    }
+
+    function nextPage(pageId) {
+      showPage(pageId);
+      setActiveNav(pageId);
+    }
+
+    // Letter
+    function openEnvelope() {
+      const envelope = document.querySelector(".envelope");
+      const letterContent = document.getElementById("letterContent");
+      envelope.classList.add("open");
+      setTimeout(() => { letterContent.style.display = "block"; }, 600);
+    }
+
+    // Modals
+    function openModal() {
+      document.getElementById("heartModal").style.display = "flex";
+    }
+
+    function goToLetter() {
+      document.getElementById("heartModal").style.display = "none";
+      nextPage("letter");
+    }
+
+    function closeUnlockModal() {
+      document.getElementById("unlockModal").style.display = "none";
+    }
+
+    function unlockFinal() {
+      if (flippedCards === totalCards) {
+        document.getElementById("unlockModal").style.display = "flex";
+      }
+    }
+
+    function goToFinal() {
+      closeUnlockModal();
+      nextPage("final");
+    }
+
+    // Flip cards progress
+    function flipCard(card) {
+      if (!card.classList.contains("flipped")) {
+        card.classList.add("flipped");
+        flippedCards++;
+        document.getElementById("progressText").textContent =
+          `${flippedCards} of ${totalCards} messages discovered! Keep exploring 💙`;
+        document.getElementById("progressFill").style.width =
+          (flippedCards / totalCards * 100) + "%";
+        if (flippedCards === totalCards) {
+          document.getElementById("finalBtn").disabled = false;
+        }
+      }
+    }
+
+    // High fives
+    function sendHighFives() {
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const highfive = document.createElement("div");
+          highfive.className = "highfive";
+          highfive.innerHTML = "✋";
+          highfive.style.left = Math.random() * 100 + "vw";
+          highfive.style.top = (Math.random() * 50 + 50) + "vh";
+          highfive.style.fontSize = (25 + Math.random() * 35) + "px";
+          highfive.style.animationDuration = (2 + Math.random() * 2) + "s";
+          document.body.appendChild(highfive);
+          setTimeout(() => highfive.remove(), 3000);
+        }, i * 200);
+      }
+      alert("✋ 15 virtual high fives sent your way! You rock, Lotus!");
+    }
+
+    // Restart
+    function restartExperience() {
+      flippedCards = 0;
+      document.querySelectorAll(".flip-card").forEach(c => c.classList.remove("flipped"));
+      document.getElementById("progressText").textContent = "0 of 3 messages discovered! Keep exploring 💙";
+      document.getElementById("progressFill").style.width = "0%";
+      document.getElementById("finalBtn").disabled = true;
+
+      closePlayer();
+      document.querySelectorAll(".playlist-card").forEach(c => c.classList.remove("active"));
+
+      const env = document.querySelector(".envelope");
+      const letterContent = document.getElementById("letterContent");
+      env.classList.remove("open");
+      letterContent.style.display = "none";
+
+      nextPage("home");
+    }
+
+    // ====== SOUND GATE ======
+    async function unlockSound(){
+      document.getElementById("soundGate").style.display = "none";
+      // Attempt to play if a song is selected
+      if(currentSong !== null){
+        try{ await audio.play(); playBtn.style.display="none"; pauseBtn.style.display="flex"; }
+        catch(e){ /* ignore */ }
+      }
+    }
+
+    // ====== QR SHARE ======
+    let qrReady = false;
+    function openQRModal(){
+      const modal = document.getElementById("qrModal");
+      modal.style.display = "flex";
+
+      const url = window.location.href;
+      document.getElementById("qrHint").textContent = "Link: " + url;
+
+      // Build QR once
+      if(!qrReady && window.QRCode){
+        const el = document.getElementById("qrcode");
+        el.innerHTML = "";
+        new QRCode(el, { text: url, width: 200, height: 200 });
+        qrReady = true;
+      }
+    }
+
+    function closeQRModal(){
+      document.getElementById("qrModal").style.display = "none";
+    }
+
+    async function copyLink(){
+      try{
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Link copied!");
+      }catch(e){
+        prompt("Copy this link:", window.location.href);
+      }
+    }
+  </script>
+</body>
+</html>
