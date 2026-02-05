@@ -1,14 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Friendship Surprise</title>
-  <meta http-equiv="refresh" content="0; url=./louts/">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Redirecting…</title>
+
+  <!-- Better redirect + cache-bust -->
+  <meta http-equiv="refresh" content="0; url=./louts/?v=1" />
   <script>
-    window.location.href = "./louts/";
+    (function () {
+      // force correct path even if browser caches old redirect
+      var target = "./louts/?v=1";
+      if (!location.pathname.endsWith("/louts/")) {
+        location.replace(target);
+      }
+    })();
   </script>
 </head>
 <body>
-  Redirecting… 💙
+  Redirecting to the surprise… 💙
+  <br>
+  <a href="./louts/?v=1">If not redirected, tap here</a>
 </body>
 </html>
